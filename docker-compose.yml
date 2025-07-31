@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: photo-go-postgres
+    environment:
+      POSTGRES_DB: photo_go
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: photo-go-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Go API Server
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: photo-go-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=photo_go
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=
+      - PORT=8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+
+  # Rust Transcode Service
+  transcode-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.transcode
+    container_name: photo-go-transcode
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+    volumes:
+      - ./uploads:/app/uploads
+      - /usr/bin/ffmpeg:/usr/bin/ffmpeg:ro
+
+volumes:
+  postgres_data:
+  redis_data: 

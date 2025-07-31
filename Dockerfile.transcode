@@ -1,0 +1,41 @@
+# Build stage
+FROM rust:1.70-alpine AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache musl-dev
+
+# Copy Cargo files
+COPY pkg/transcode/Cargo.toml pkg/transcode/Cargo.lock ./
+
+# Create a dummy main.rs to build dependencies
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+RUN cargo build --release
+RUN rm -rf src
+
+# Copy source code
+COPY pkg/transcode/src ./src
+
+# Build the application
+RUN cargo build --release
+
+# Final stage
+FROM alpine:latest
+
+# Install runtime dependencies
+RUN apk add --no-cache ca-certificates ffmpeg
+
+WORKDIR /app
+
+# Copy the binary from builder stage
+COPY --from=builder /app/target/release/transcode-service .
+
+# Create uploads directory
+RUN mkdir -p uploads
+
+# Expose port
+EXPOSE 8081
+
+# Run the application
+CMD ["./transcode-service"] 

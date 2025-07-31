@@ -1,0 +1,55 @@
+[package]
+name = "transcode-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.4"
+actix-files = "0.6"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+futures = "0.3"
+uuid = { version = "1.0", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+env_logger = "0.10"
+log = "0.4"
+anyhow = "1.0"
+thiserror = "1.0"
+
+# FFmpeg bindings
+ffmpeg-next = "6.1"
+
+# Image processing
+image = "0.24"
+imageproc = "0.23"
+opencv = "0.88"
+exif = "0.6"
+
+# Audio processing  
+symphonia = "0.5"
+hound = "3.5"
+
+# AI/ML features
+candle-core = "0.3"
+candle-nn = "0.3"
+
+# Metadata extraction
+kamadak-exif = "0.5"
+mp4parse = "0.17"
+
+# Additional image processing
+fast_image_resize = "3.0"
+photon-rs = "0.3"
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono"] }
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Async runtime
+async-trait = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4" 
