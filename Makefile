@@ -97,4 +97,78 @@ security:
 	@echo "🔒 Running security checks..."
 	@go vet ./...
 	@cd pkg/transcode && cargo audit
-	@echo "✅ Security checks completed" 
+	@cd pkg/image-processing && cargo audit
+	@echo "✅ Security checks completed"
+
+# Media Processing Service (Combined Video + Image)
+media-processing:
+	@echo "🎬🖼️ Building Media Processing Service (Video + Image)..."
+	@cd pkg/transcode && cargo build --release
+	@echo "✅ Media Processing Service built"
+
+media-processing-dev:
+	@echo "🎬🖼️ Running Media Processing Service (development)..."
+	@cd pkg/transcode && cargo run
+
+media-processing-test:
+	@echo "🧪 Testing Media Processing Service..."
+	@cd pkg/transcode && cargo test
+	@echo "✅ Media Processing Service tests completed"
+
+# Legacy aliases for backwards compatibility
+image-processing: media-processing
+image-processing-dev: media-processing-dev
+image-processing-test: media-processing-test
+
+# Test Image Processing API (legacy)
+test-image-api:
+	@echo "🔧 Testing Image Processing API..."
+	@./scripts/test_image_processing.sh
+	@echo "✅ Image Processing API tests completed"
+
+# Test Media Processing API (new)
+test-media-api:
+	@echo "🎬🖼️ Testing Media Processing API..."
+	@./scripts/test_merged_service.sh
+	@echo "✅ Media Processing API tests completed"
+
+# Update service aliases
+transcode: media-processing
+	@echo "📺 Video transcoding is now part of Media Processing Service"
+
+# Build all Rust services
+rust-services: media-processing
+	@echo "🦀 Media Processing Service built successfully"
+
+# Development mode - run all services
+dev-all: dev-services media-processing-dev
+	@echo "🚀 All services running in development mode"
+
+# Easy run scripts
+run-go:
+	@echo "🔧 Starting Go API Server..."
+	@./run.sh
+
+run-rust:
+	@echo "🦀 Starting Rust Media Processing Service..."
+	@./run_rust.sh
+
+run-all:
+	@echo "🚀 Starting complete Photo-Go stack..."
+	@./run_all.sh
+
+run-all-monitor:
+	@echo "👀 Starting Photo-Go stack with monitoring..."
+	@./run_all.sh --monitor
+
+run-go-only:
+	@echo "🔧 Starting Go API only..."
+	@./run_all.sh --go-only
+
+stop-all:
+	@echo "🛑 Stopping all services..."
+	@./run_all.sh --stop
+
+status:
+	@echo "📊 Checking service status..."
+	@./run_all.sh --status 
