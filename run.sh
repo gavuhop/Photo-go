@@ -11,7 +11,7 @@ if [ ! -f "$json_file_path" ]; then
     exit 1
 fi
 
-eval $(go run configs/env/secret_base64.go -p $json_file_path)
+eval $(go run config/env/secret_base64.go -p $json_file_path)
 export NOT_DEBUG=true
 echo "================================================"
 echo "	Finished export all env"

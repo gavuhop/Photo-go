@@ -28,11 +28,17 @@ type _Setting struct {
 	ConnMaxIdleTime int    `json:"CONN_MAX_IDLE_TIME" default:"30" description:"30 seconds"`
 	ConnMaxLifetime int    `json:"CONN_MAX_LIFETIME" default:"30" description:"30 seconds"`
 	Debug           bool   `json:"DEBUG"`
+	Port            string `json:"PORT"`
+	DBEngine        string `json:"DB_ENGINE"`
 	DBHost          string `json:"DB_HOST"`
 	DBPort          int    `json:"DB_PORT"`
 	DBUser          string `json:"DB_USER"`
 	DBPass          string `json:"DB_PASS"`
 	DBName          string `json:"DB_NAME"`
+	MinioEndpoint   string `json:"MINIO_ENDPOINT"`
+	MinioAccessKey  string `json:"MINIO_ACCESS_KEY"`
+	MinioSecretKey  string `json:"MINIO_SECRET_KEY"`
+	MinioBucket     string `json:"MINIO_BUCKET"`
 
 	DefaultPageSize   int `json:"DEFAULT_PAGE_SIZE"`
 	DefaultPageNumber int `json:"DEFAULT_PAGE_NUMBER"`

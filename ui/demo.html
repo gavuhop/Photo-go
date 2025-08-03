@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Photo-go API Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em;
+        }
+
+        input[type=file] {
+            margin-bottom: 1em;
+        }
+
+        .result {
+            margin-top: 1em;
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        label {
+            display: block;
+            margin-top: 1em;
+        }
+
+        button {
+            margin-top: 0.5em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Photo-go API Demo</h1>
+
+    <h2>Upload Media</h2>
+    <form id="uploadForm">
+        <input type="file" name="file" id="fileInput" required />
+        <button type="submit">Upload</button>
+    </form>
+    <div id="uploadResult" class="result"></div>
+
+    <h2>Get Media (by ID)</h2>
+    <label>
+        Media ID:
+        <input type="text" id="getMediaId" />
+    </label>
+    <button onclick="getMedia()">Get Media</button>
+    <div id="getMediaResult" class="result"></div>
+
+    <h2>Stream HLS (by ID)</h2>
+    <label>
+        Media ID:
+        <input type="text" id="streamMediaId" />
+    </label>
+    <button onclick="streamMedia()">Stream HLS</button>
+    <div id="streamMediaResult" class="result"></div>
+
+    <script>
+        // Upload
+        document.getElementById('uploadForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('uploadResult');
+            resultDiv.textContent = '';
+            if (!fileInput.files.length) {
+                resultDiv.textContent = 'Please select a file.';
+                resultDiv.className = 'error';
+                return;
+            }
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            try {
+                const res = await fetch('/media/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    resultDiv.textContent = 'Upload success! Stream URL: ' + data.stream_url;
+                    resultDiv.className = 'result';
+                } else {
+                    resultDiv.textContent = data.error || 'Upload failed.';
+                    resultDiv.className = 'error';
+                }
+            } catch (err) {
+                resultDiv.textContent = 'Error: ' + err;
+                resultDiv.className = 'error';
+            }
+        };
+
+        // Get Media
+        async function getMedia() {
+            const id = document.getElementById('getMediaId').value.trim();
+            const resultDiv = document.getElementById('getMediaResult');
+            resultDiv.textContent = '';
+            if (!id) {
+                resultDiv.textContent = 'Please enter media ID.';
+                resultDiv.className = 'error';
+                return;
+            }
+            try {
+                const res = await fetch(`/media/${id}`);
+                if (res.status === 501) {
+                    resultDiv.textContent = 'Not implemented.';
+                    resultDiv.className = 'error';
+                    return;
+                }
+                const data = await res.json();
+                resultDiv.textContent = JSON.stringify(data);
+                resultDiv.className = 'result';
+            } catch (err) {
+                resultDiv.textContent = 'Error: ' + err;
+                resultDiv.className = 'error';
+            }
+        }
+
+        // Stream HLS
+        function streamMedia() {
+            const id = document.getElementById('streamMediaId').value.trim();
+            const resultDiv = document.getElementById('streamMediaResult');
+            resultDiv.textContent = '';
+            if (!id) {
+                resultDiv.textContent = 'Please enter media ID.';
+                resultDiv.className = 'error';
+                return;
+            }
+            // For demo, just show the stream URL and try to embed if m3u8
+            const url = `/media/stream/${id}`;
+            resultDiv.innerHTML = `Stream URL: <a href="${url}" target="_blank">${url}</a><br>
+        <video src="${url}" controls style="max-width: 100%; margin-top: 1em;"></video>`;
+            resultDiv.className = 'result';
+        }
+    </script>
+</body>
+
+</html>

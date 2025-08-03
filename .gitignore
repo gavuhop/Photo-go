@@ -27,6 +27,7 @@ go.work.sum
 # env file
 .env
 secret_file_dev.json
+/tmp
 
 # Editor/IDE
 # .idea/
