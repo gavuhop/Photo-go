@@ -16,8 +16,12 @@ import (
 // Mock the config package for testing
 func init() {
 	// Set environment variables before importing config
-	os.Setenv("NOT_DEBUG", "true")
-	os.Setenv("SECRET_MANAGER_BASE64", "eyJPTkVfQVBJX0tFWSI6InRlc3QtYXBpLWtleSIsIk9ORV9BUElfVVJMIjoiaHR0cDovL3Rlc3QtYXBpLXVybCIsIk1PREVMIjoiZ3B0LTQwLW1pbmkiLCJHT09HTEVfQ0xPVURfQVBJX0tFWSI6InRlc3QtZ29vZ2xlLWtleSIsIkxPR19MRVZFTCI6IklORk8ifQ==")
+	if err := os.Setenv("NOT_DEBUG", "true"); err != nil {
+		panic(fmt.Sprintf("failed to set NOT_DEBUG env var: %v", err))
+	}
+	if err := os.Setenv("SECRET_MANAGER_BASE64", "eyJPTkVfQVBJX0tFWSI6InRlc3QtYXBpLWtleSIsIk9ORV9BUElfVVJMIjoiaHR0cDovL3Rlc3QtYXBpLXVybCIsIk1PREVMIjoiZ3B0LTQwLW1pbmkiLCJHT09HTEVfQ0xPVURfQVBJX0tFWSI6InRlc3QtZ29vZ2xlLWtleSIsIkxPR19MRVZFTCI6IklORk8ifQ=="); err != nil {
+		panic(fmt.Sprintf("failed to set SECRET_MANAGER_BASE64 env var: %v", err))
+	}
 }
 
 // TestLoggerInitialization tests the logger initialization
@@ -83,7 +87,9 @@ func TestLoggingFunctions(t *testing.T) {
 	defer GetLogger().SetOutput(originalOutput)
 
 	// Set log level to debug to capture all messages
-	SetLevel("debug")
+	if err := SetLevel("debug"); err != nil {
+		t.Fatalf("failed to set log level to debug: %v", err)
+	}
 
 	tests := []struct {
 		name     string
@@ -138,7 +144,9 @@ func TestErrorLoggingWithError(t *testing.T) {
 	GetLogger().SetOutput(&buf)
 	defer GetLogger().SetOutput(originalOutput)
 
-	SetLevel("error")
+	if err := SetLevel("error"); err != nil {
+		t.Fatalf("failed to set log level to error: %v", err)
+	}
 
 	testErr := errors.New("test error")
 	Error(testErr, "error occurred: %s", "test message")
@@ -156,7 +164,9 @@ func TestErrorLoggingWithoutError(t *testing.T) {
 	GetLogger().SetOutput(&buf)
 	defer GetLogger().SetOutput(originalOutput)
 
-	SetLevel("error")
+	if err := SetLevel("error"); err != nil {
+		t.Fatalf("failed to set log level to error: %v", err)
+	}
 
 	Error(nil, "error occurred: %s", "test message")
 
@@ -175,7 +185,9 @@ func TestWithField(t *testing.T) {
 	GetLogger().SetOutput(&buf)
 	defer GetLogger().SetOutput(originalOutput)
 
-	SetLevel("info")
+	if err := SetLevel("info"); err != nil {
+		t.Fatalf("failed to set log level to info: %v", err)
+	}
 
 	entry := WithField("test_key", "test_value")
 	entry.Info("message with field")
@@ -192,7 +204,9 @@ func TestWithFields(t *testing.T) {
 	GetLogger().SetOutput(&buf)
 	defer GetLogger().SetOutput(originalOutput)
 
-	SetLevel("info")
+	if err := SetLevel("info"); err != nil {
+		t.Fatalf("failed to set log level to info: %v", err)
+	}
 
 	fields := logrus.Fields{
 		"key1": "value1",
@@ -281,7 +295,9 @@ func TestLogLevels(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf.Reset()
-			SetLevel(tt.level)
+			if err := SetLevel(tt.level); err != nil {
+				t.Fatalf("failed to set log level to %s: %v", tt.level, err)
+			}
 			tt.logFunc()
 			output := buf.String()
 
@@ -301,7 +317,9 @@ func TestLogFormatting(t *testing.T) {
 	GetLogger().SetOutput(&buf)
 	defer GetLogger().SetOutput(originalOutput)
 
-	SetLevel("info")
+	if err := SetLevel("info"); err != nil {
+		t.Fatalf("failed to set log level to info: %v", err)
+	}
 
 	Info("test message with %s", "formatting")
 
@@ -328,7 +346,9 @@ func TestConcurrentLogging(t *testing.T) {
 	GetLogger().SetOutput(&buf)
 	defer GetLogger().SetOutput(originalOutput)
 
-	SetLevel("info")
+	if err := SetLevel("info"); err != nil {
+		t.Fatalf("failed to set log level to info: %v", err)
+	}
 
 	// Run multiple goroutines logging simultaneously
 	done := make(chan bool, 10)

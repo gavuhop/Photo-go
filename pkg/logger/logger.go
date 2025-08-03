@@ -137,7 +137,6 @@ func WithFields(fields logrus.Fields) *logrus.Entry {
 
 // SetLevel sets the log level directly
 func SetLevel(levelStr string) error {
-
 	level, err := logrus.ParseLevel(levelStr)
 	if err != nil {
 		return fmt.Errorf("invalid log level: %v", err)
