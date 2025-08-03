@@ -1,4 +1,4 @@
-package service
+package v1
 
 import (
 	"context"
@@ -10,14 +10,7 @@ import (
 	"time"
 )
 
-type MediaService struct {
-	VideoCore core.VideoProcessor
-	ImageCore core.ImageProcessor
-	Repo      database.MediaRepository
-	Minio     *utils.MinioClient
-}
-
-func NewMediaService(v core.VideoProcessor, i core.ImageProcessor, r database.MediaRepository, m *utils.MinioClient) *MediaService {
+func NewMediaService(v core.VideoProcessor, i core.ImageProcessor, r MediaRepository, m *utils.MinioClient) *MediaService {
 	return &MediaService{
 		VideoCore: v,
 		ImageCore: i,

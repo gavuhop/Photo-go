@@ -9,10 +9,9 @@ import (
 	"gorm.io/gorm"
 
 	"photo-go/config"
-	v1 "photo-go/internal/api/v1"
+	"photo-go/internal/api"
 	"photo-go/internal/core"
 	"photo-go/internal/database"
-	"photo-go/internal/service"
 	"photo-go/pkg/logger"
 	"photo-go/pkg/utils"
 )
@@ -52,11 +51,6 @@ func main() {
 	imageCore := core.NewDefaultImageProcessor()
 	logger.Info("Core processors initialized")
 
-	// Init repository & service
-	repo := database.NewGormMediaRepository(db)
-	mediaService := service.NewMediaService(videoCore, imageCore, repo, minioClient)
-	logger.Info("Media service initialized")
-
 	// Init Fiber
 	app := fiber.New()
 	logger.Info("Fiber app initialized")
@@ -68,9 +62,8 @@ func main() {
 		AllowHeaders: []string{"Origin", "Content-Type", "Accept", "Authorization", "Cache-Control"},
 	}))
 
-	// Register API
-	handler := v1.NewMediaHandler(mediaService)
-	handler.RegisterRoutes(app)
+	// Register API v1 routes (truyền các thành phần cần thiết, khởi tạo service/repo bên trong route v1)
+	api.RegisterV1Routes(app, db, videoCore, imageCore, minioClient)
 	logger.Info("API routes registered")
 
 	// Start server

@@ -1,17 +1,16 @@
 package v1
 
 import (
-	"photo-go/internal/service"
 	"photo-go/pkg/logger"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 type MediaHandler struct {
-	Service *service.MediaService
+	Service *MediaService
 }
 
-func NewMediaHandler(s *service.MediaService) *MediaHandler {
+func NewMediaHandler(s *MediaService) *MediaHandler {
 	return &MediaHandler{Service: s}
 }
 
