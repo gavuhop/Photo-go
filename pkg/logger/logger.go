@@ -3,11 +3,10 @@ package logger
 import (
 	"fmt"
 	"os"
+	"photo-go/config"
 	"runtime"
 	"strings"
 	"time"
-
-	"photo-go/config"
 
 	"github.com/sirupsen/logrus"
 )
